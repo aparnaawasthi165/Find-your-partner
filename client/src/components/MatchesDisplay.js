@@ -3,45 +3,59 @@ import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 
 const MatchesDisplay = ({ matches, setClickedUser }) => {
-  const [matchedProfiles, setMatchedProfiles] = useState(null);
-  const [cookies, setCookie, removeCookie] = useCookies(null);
-
+  const [matchedProfiles, setMatchedProfiles] = useState([]);
+  const [cookies] = useCookies(["UserId"]);
+  const [concatenatedID, setConcatenatedID] = useState(null);
   const matchedUserIds = matches.map(({ user_id }) => user_id);
   const userId = cookies.UserId;
 
-  const getMatches = async () => {
-    try {
-      const response = await axios.get("http://localhost:8000/users", {
-        params: { userIds: JSON.stringify(matchedUserIds) },
-      });
-      setMatchedProfiles(response.data);
-    } catch (error) {
-      console.log(error);
-    }
+  useEffect(() => {
+    const getMatches = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/users", {
+          params: { userIds: JSON.stringify(matchedUserIds) },
+        });
+        setMatchedProfiles(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getMatches();
+  }, [matchedUserIds]);
+
+  const generateUniqueConversationID = (userId, matchedUserId) => {
+    // Concatenate user IDs in a consistent order
+    const conversationID =
+      userId < matchedUserId
+        ? userId.toString() + matchedUserId.toString()
+        : matchedUserId.toString() + userId.toString();
+
+    setConcatenatedID(conversationID);
   };
 
-  useEffect(() => {
-    getMatches();
-  }, [matches]);
-
-  const filteredMatchedProfiles = matchedProfiles?.filter(
-    (matchedProfile) =>
-      matchedProfile.matches.filter((profile) => profile.user_id === userId)
-        .length > 0
-  );
+  const openChatLink = () => {
+    // Replace the empty string with your chat link URL
+    window.open("YOUR_CHAT_LINK_URL", "_blank"); // Opens the URL in a new tab or window
+  };
 
   return (
     <div className="matches-display">
-      {filteredMatchedProfiles?.map((match, _index) => (
+      {matchedProfiles.map((match, index) => (
         <div
-          key={_index}
+          key={index}
           className="match-card"
           onClick={() => setClickedUser(match)}
         >
           <div className="img-container">
-            <img src={match?.url} alt={match?.first_name + " profile"} />
+            <p onClick={() => generateUniqueConversationID(userId, match.user_id)}>
+              {concatenatedID
+                ? `Your unique conversation ID: ${concatenatedID}`
+                : "Click here to generate a unique conversation ID"}
+            </p>
+            <img src={match?.url} alt={`${match?.first_name} profile`} />
           </div>
-          <h3>{match?.first_name}</h3>
+          <h3 onClick={openChatLink}>{match?.first_name}</h3>
         </div>
       ))}
     </div>
