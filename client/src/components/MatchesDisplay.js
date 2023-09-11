@@ -53,6 +53,7 @@ const MatchesDisplay = ({ matches, setClickedUser }) => {
                 ? `Your unique conversation ID: ${concatenatedID}`
                 : "Click here to generate a unique conversation ID"}
             </p>
+  //Github link to chat app :https://github.com/aparnaawasthi165/CloudChat
             <img src={match?.url} alt={`${match?.first_name} profile`} />
           </div>
           <h3 onClick={openChatLink}>{match?.first_name}</h3>
