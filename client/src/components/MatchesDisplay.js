@@ -37,6 +37,7 @@ const MatchesDisplay = ({ matches, setClickedUser }) => {
   const openChatLink = () => {
     // Replace the empty string with your chat link URL
     window.open("https://illustrious-lamington-0b29bb.netlify.app/", "_blank"); // Opens the URL in a new tab or window
+    //Github Link to the chat app- "https://github.com/aparnaawasthi165/Cloud-Chat"
   };
 
   return (
